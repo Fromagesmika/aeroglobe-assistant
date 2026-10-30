@@ -1,0 +1,21 @@
+AeroportID,CodeIATA,NomAeroport,Ville,Pays,Continent,Latitude,Longitude,FuseauHoraire
+1,CDG,Paris Charles de Gaulle,Paris,France,Europe,49.0097,2.5479,Europe/Paris
+2,ORY,Paris Orly,Paris,France,Europe,48.7262,2.3652,Europe/Paris
+3,LYS,Lyon Saint-Exupéry,Lyon,France,Europe,45.7256,5.0811,Europe/Paris
+4,MRS,Marseille Provence,Marseille,France,Europe,43.4393,5.2214,Europe/Paris
+5,NCE,Nice Côte d'Azur,Nice,France,Europe,43.6584,7.2159,Europe/Paris
+6,LHR,London Heathrow,Londres,Royaume-Uni,Europe,51.47,-0.4543,Europe/London
+7,FRA,Frankfurt am Main,Francfort,Allemagne,Europe,50.0379,8.5622,Europe/Berlin
+8,MAD,Madrid Barajas,Madrid,Espagne,Europe,40.4983,-3.5676,Europe/Madrid
+9,BCN,Barcelona El Prat,Barcelone,Espagne,Europe,41.2974,2.0833,Europe/Madrid
+10,FCO,Roma Fiumicino,Rome,Italie,Europe,41.8003,12.2389,Europe/Rome
+11,AMS,Amsterdam Schiphol,Amsterdam,Pays-Bas,Europe,52.3105,4.7683,Europe/Amsterdam
+12,GVA,Genève,Genève,Suisse,Europe,46.2381,6.109,Europe/Zurich
+13,CMN,Casablanca Mohammed V,Casablanca,Maroc,Afrique,33.3675,-7.59,Africa/Casablanca
+14,RAK,Marrakech Menara,Marrakech,Maroc,Afrique,31.6069,-8.0363,Africa/Casablanca
+15,TUN,Tunis Carthage,Tunis,Tunisie,Afrique,36.851,10.2272,Africa/Tunis
+16,ALG,Alger Houari Boumediene,Alger,Algérie,Afrique,36.691,3.2154,Africa/Algiers
+17,CAI,Le Caire,Le Caire,Égypte,Afrique,30.1219,31.4056,Africa/Cairo
+18,DKR,Dakar Blaise Diagne,Dakar,Sénégal,Afrique,14.67,-17.073,Africa/Dakar
+19,IST,Istanbul,Istanbul,Turquie,Asie,41.2753,28.7519,Europe/Istanbul
+20,DXB,Dubai International,Dubaï,Émirats Arabes Unis,Asie,25.2532,55.3657,Asia/Dubai

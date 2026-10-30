@@ -1,0 +1,176 @@
+{
+  "Quel est le chiffre d'affaires par année ?": {
+    "answer": "Le chiffre d'affaires d'AeroGlobe Airways a connu une croissance soutenue, passant de 38,2 million d'euros en 2022 à 55,4 millions d'euros en 2025. Pour l'année 2026, qui est incomplète (données arrêtées au 25/09/2026), le chiffre d'affaires atteint déjà 35,6 millions d'euros.",
+    "sql": "SELECT year(DateVenteID) AS Annee, round(sum(MontantNet), 2) AS ChiffreAffaires FROM fait_ventes WHERE StatutBillet = 'Payé' GROUP BY 1 ORDER BY 1",
+    "chart": {
+      "x": "Annee",
+      "y": "ChiffreAffaires",
+      "type": "bar",
+      "title": "Chiffre d'affaires par année"
+    },
+    "steps": [
+      {
+        "objectif": "Calculer le chiffre d'affaires par année (statut Payé)",
+        "sql": "SELECT year(DateVenteID) AS Annee, round(sum(MontantNet), 2) AS ChiffreAffaires FROM fait_ventes WHERE StatutBillet = 'Payé' GROUP BY 1 ORDER BY 1",
+        "ok": true,
+        "detail": "5 ligne(s)"
+      }
+    ],
+    "provider": "Google Gemini",
+    "model": "gemini-flash-lite-latest",
+    "date": "2026-10-30"
+  },
+  "Quelles sont les 5 routes les plus en retard ?": {
+    "answer": "Les 5 routes affichant les retards moyens au départ les plus élevés sont menées par la liaison Dubaï - Rome (DXB → FCO) avec 14,78 minutes de retard moyen. Viennent ensuite Dubaï - Londres (DXB → LHR) à 14,31 min et Dubaï - Marseille (DXB → MRS) à 14,23 min. Les liaisons Paris Orly - Alger et Marrakech - Orly complètent ce top 5 avec respectivement 13,99 min et 13,66 min de retard moyen au départ.",
+    "sql": "SELECT \n    r.Route || ' (' || r.NumeroVol || ')' AS Route,\n    ROUND(AVG(o.RetardDepartMin), 2) AS RetardMoyenDepartMin,\n    ROUND(AVG(o.RetardArriveeMin), 2) AS RetardMoyenArriveeMin,\n    COUNT(o.OperationID) AS TotalVols\nFROM v_operations o\nJOIN v_routes r ON o.VolID = r.VolID\nGROUP BY r.Route, r.NumeroVol\nORDER BY RetardMoyenDepartMin DESC\nLIMIT 5;",
+    "chart": {
+      "x": "Route",
+      "y": "RetardMoyenDepartMin",
+      "title": "Top 5 des routes par retard moyen au départ (minutes)",
+      "type": "horizontal_bar"
+    },
+    "steps": [
+      {
+        "objectif": "Vérifier la métrique de retard par route (retard moyen départ, arrivée, taux de vol retardé, etc.)",
+        "sql": "SELECT \n    r.Route,\n    r.NumeroVol,\n    COUNT(o.OperationID) AS nb_vols,\n    ROUND(AVG(o.RetardDepartMin), 2) AS retard_moyen_depart,\n    ROUND(AVG(o.RetardArriveeMin), 2) AS retard_moyen_arrivee,\n    COUNT(CASE WHEN o.RetardDepartMin >= 15 THEN 1 END) AS nb_vols_retardes,\n    ROUND(100.0 * COUNT(CASE WHEN o.RetardDepartMin >= 15 THEN 1 END) / COUNT(o.OperationID), 2) AS pct_vols_retardes\nFROM v_operations o\nJOIN v_routes r ON o.VolID = r.VolID\nGROUP BY r.Route, r.NumeroVol\nORDER BY retard_moyen_depart DESC\nLIMIT 10;",
+        "ok": true,
+        "detail": "10 ligne(s)"
+      },
+      {
+        "objectif": "Comparer retard départ, retard arrivée et pct retardés pour s'assurer de la clarté",
+        "sql": "SELECT \n    r.Route,\n    r.NumeroVol,\n    COUNT(o.OperationID) AS TotalVols,\n    ROUND(AVG(o.RetardDepartMin), 2) AS RetardMoyenDepartMin,\n    ROUND(AVG(o.RetardArriveeMin), 2) AS RetardMoyenArriveeMin,\n    COUNT(CASE WHEN o.RetardDepartMin >= 15 THEN 1 END) AS NbVolsRetardes,\n    ROUND(100.0 * COUNT(CASE WHEN o.RetardDepartMin >= 15 THEN 1 END) / COUNT(o.OperationID), 2) AS TauxRetardPct\nFROM v_operations o\nJOIN v_routes r ON o.VolID = r.VolID\nGROUP BY r.Route, r.NumeroVol\nORDER BY RetardMoyenDepartMin DESC\nLIMIT 5;",
+        "ok": true,
+        "detail": "5 ligne(s)"
+      },
+      {
+        "objectif": "Top 5 par retard moyen à l'arrivée",
+        "sql": "SELECT \n    r.Route,\n    r.NumeroVol,\n    COUNT(o.OperationID) AS TotalVols,\n    ROUND(AVG(o.RetardDepartMin), 2) AS RetardMoyenDepartMin,\n    ROUND(AVG(o.RetardArriveeMin), 2) AS RetardMoyenArriveeMin\nFROM v_operations o\nJOIN v_routes r ON o.VolID = r.VolID\nGROUP BY r.Route, r.NumeroVol\nORDER BY RetardMoyenArriveeMin DESC\nLIMIT 5;",
+        "ok": true,
+        "detail": "5 ligne(s)"
+      }
+    ],
+    "provider": "Google Gemini",
+    "model": "gemini-flash-lite-latest",
+    "date": "2026-10-30"
+  },
+  "Les clients Platinum sont-ils plus satisfaits que les autres ?": {
+    "answer": "Les clients Platinum affichent une note de satisfaction globale moyenne de 7,50 sur 10, ce qui est très légèrement supérieur aux autres segments (Standard à 7,49, Gold et Silver à 7,48). Cette différence reste minime et témoigne d'un niveau de satisfaction très homogène quelle que soit la catégorie de fidélité. (Analyse portant sur les enquêtes liées à un vol).",
+    "sql": "SELECT \n    c.SegmentFidelite,\n    COUNT(s.ReponseID) AS NombreReponses,\n    ROUND(AVG(s.NoteSatisfactionGlobale), 2) AS NoteMoyenneGlobale\nFROM fait_satisfaction s\nJOIN dim_client c ON s.ClientID = c.ClientID\nWHERE s.VolID IS NOT NULL\nGROUP BY c.SegmentFidelite\nORDER BY NoteMoyenneGlobale DESC;\n",
+    "chart": {
+      "x": "SegmentFidelite",
+      "y": "NoteMoyenneGlobale",
+      "type": "bar",
+      "title": "Satisfaction globale par segment de fidélité"
+    },
+    "steps": [
+      {
+        "objectif": "Comparer la satisfaction globale moyenne par segment de fidélité des clients",
+        "sql": "SELECT \n    c.SegmentFidelite,\n    COUNT(s.ReponseID) AS NombreReponses,\n    ROUND(AVG(s.NoteSatisfactionGlobale), 2) AS NoteMoyenneGlobale,\n    ROUND(AVG(s.NotePonctualite), 2) AS NoteMoyennePonctualite,\n    ROUND(AVG(s.NoteConfort), 2) AS NoteMoyenneConfort,\n    ROUND(AVG(s.NoteService), 2) AS NoteMoyenneService\nFROM fait_satisfaction s\nJOIN dim_client c ON s.ClientID = c.ClientID\nWHERE s.VolID IS NOT NULL\nGROUP BY c.SegmentFidelite\nORDER BY NoteMoyenneGlobale DESC;\n",
+        "ok": true,
+        "detail": "4 ligne(s)"
+      }
+    ],
+    "provider": "Google Gemini",
+    "model": "gemini-flash-lite-latest",
+    "date": "2026-10-30"
+  },
+  "Est-ce que les retards font baisser la note de satisfaction ?": {
+    "answer": "Oui, les retards au départ font baisser la note de satisfaction globale des passagers. Elle passe ainsi de 7,54 / 10 pour les vols à l'heure à 7,16 / 10 pour les retards importants de plus d'une heure. L'analyse porte sur les enquêtes rattachées à un vol spécifique (hors réclamations générales).",
+    "sql": "SELECT \n    CASE \n        WHEN o.RetardDepartMin <= 0 THEN '0. À l''heure ou en avance'\n        WHEN o.RetardDepartMin BETWEEN 1 AND 15 THEN '1. Retard léger (1-15 min)'\n        WHEN o.RetardDepartMin BETWEEN 16 AND 60 THEN '2. Retard modéré (16-60 min)'\n        ELSE '3. Retard important (> 60 min)'\n    END AS CategorieRetard,\n    ROUND(AVG(s.NoteSatisfactionGlobale), 2) AS NoteMoyenne,\n    COUNT(*) AS NombreReponses\nFROM fait_satisfaction s\nJOIN v_operations o ON s.VolID = o.VolID AND s.DateEnqueteID = o.DateVolID\nWHERE s.VolID IS NOT NULL AND o.RetardDepartMin IS NOT NULL\nGROUP BY 1\nORDER BY 1;",
+    "chart": {
+      "y": "NoteMoyenne",
+      "x": "CategorieRetard",
+      "title": "Note de satisfaction selon le retard au départ",
+      "type": "bar"
+    },
+    "steps": [
+      {
+        "objectif": "Analyser la relation entre les retards au départ et la note de satisfaction globale",
+        "sql": "SELECT \n    CASE \n        WHEN o.RetardDepartMin <= 0 THEN '0. À l''heure ou en avance'\n        WHEN o.RetardDepartMin BETWEEN 1 AND 15 THEN '1. Retard léger (1-15 min)'\n        WHEN o.RetardDepartMin BETWEEN 16 AND 60 THEN '2. Retard modéré (16-60 min)'\n        ELSE '3. Retard important (> 60 min)'\n    END AS CategorieRetard,\n    ROUND(AVG(s.NoteSatisfactionGlobale), 2) AS NoteMoyenne,\n    ROUND(AVG(o.RetardDepartMin), 1) AS RetardMoyenMin,\n    COUNT(*) AS NombreReponses\nFROM fait_satisfaction s\nJOIN fait_operations o ON s.VolID = o.VolID AND s.DateEnqueteID = o.DateVolID\nWHERE s.VolID IS NOT NULL AND o.RetardDepartMin IS NOT NULL\nGROUP BY 1\nORDER BY 1;\n",
+        "ok": false,
+        "detail": "Binder Error: Table \"o\" does not have a column named \"RetardDepartMin\"\n\nCandidate bindings: : \"HeureDepartPrevue\"\n\nLINE 13: WHERE s.VolID IS NOT NULL AND o.RetardDepartMin IS NOT NULL\n                                       ^^^^^^^^^^^^^^^^^"
+      },
+      {
+        "objectif": "Utiliser v_operations pour analyser la satisfaction selon le retard au départ",
+        "sql": "SELECT \n    CASE \n        WHEN o.RetardDepartMin <= 0 THEN '0. À l''heure ou en avance'\n        WHEN o.RetardDepartMin BETWEEN 1 AND 15 THEN '1. Retard léger (1-15 min)'\n        WHEN o.RetardDepartMin BETWEEN 16 AND 60 THEN '2. Retard modéré (16-60 min)'\n        ELSE '3. Retard important (> 60 min)'\n    END AS CategorieRetard,\n    ROUND(AVG(s.NoteSatisfactionGlobale), 2) AS NoteMoyenne,\n    COUNT(*) AS NombreReponses\nFROM fait_satisfaction s\nJOIN v_operations o ON s.VolID = o.VolID AND s.DateEnqueteID = o.DateVolID\nWHERE s.VolID IS NOT NULL AND o.RetardDepartMin IS NOT NULL\nGROUP BY 1\nORDER BY 1;\n",
+        "ok": true,
+        "detail": "4 ligne(s)"
+      }
+    ],
+    "provider": "Google Gemini",
+    "model": "gemini-flash-lite-latest",
+    "date": "2026-10-30"
+  },
+  "Quel canal de vente rapporte le plus en 2025 ?": {
+    "answer": "En 2025, le canal de vente le plus performant est le Site Web, qui génère 24 855 446,89 € de chiffre d'affaires (soit 44,86 % du total des ventes payées). Il est suivi par l'Application Mobile avec 16 734 569,04 € (30,20 %), puis par les agences physiques (14,99 %) et enfin les partenaires OTA (9,95 %).",
+    "sql": "WITH ca_par_canal AS (\n    SELECT \n        c.NomCanal AS Canal,\n        SUM(v.MontantNet) AS ChiffreAffaires,\n        COUNT(v.VenteID) AS NombreVentes\n    FROM fait_ventes v\n    JOIN dim_canal c ON v.CanalID = c.CanalID\n    WHERE v.StatutBillet = 'Payé'\n      AND YEAR(v.DateVenteID) = 2025\n    GROUP BY c.NomCanal\n)\nSELECT \n    Canal,\n    ROUND(ChiffreAffaires, 2) AS ChiffreAffaires,\n    NombreVentes,\n    ROUND(100.0 * ChiffreAffaires / SUM(ChiffreAffaires) OVER (), 2) AS PartPourcentage\nFROM ca_par_canal\nORDER BY ChiffreAffaires DESC",
+    "chart": {
+      "type": "bar",
+      "x": "Canal",
+      "title": "Chiffre d'affaires par canal de vente en 2025",
+      "y": "ChiffreAffaires"
+    },
+    "steps": [
+      {
+        "objectif": "Calculer le chiffre d'affaires par canal de vente pour l'année 2025",
+        "sql": "SELECT \n    c.NomCanal,\n    SUM(v.MontantNet) AS ChiffreAffaires,\n    COUNT(v.VenteID) AS NombreVentes\nFROM fait_ventes v\nJOIN dim_canal c ON v.CanalID = c.CanalID\nWHERE v.StatutBillet = 'Payé'\n  AND YEAR(v.DateVenteID) = 2025\nGROUP BY c.NomCanal\nORDER BY ChiffreAffaires DESC;",
+        "ok": true,
+        "detail": "4 ligne(s)"
+      },
+      {
+        "objectif": "Obtenir le CA par canal de vente en 2025 avec pourcentages et part du total",
+        "sql": "WITH ca_par_canal AS (\n    SELECT \n        c.NomCanal AS Canal,\n        SUM(v.MontantNet) AS ChiffreAffaires,\n        COUNT(v.VenteID) AS NombreVentes\n    FROM fait_ventes v\n    JOIN dim_canal c ON v.CanalID = c.CanalID\n    WHERE v.StatutBillet = 'Payé'\n      AND YEAR(v.DateVenteID) = 2025\n    GROUP BY c.NomCanal\n)\nSELECT \n    Canal,\n    ROUND(ChiffreAffaires, 2) AS ChiffreAffaires,\n    NombreVentes,\n    ROUND(100.0 * ChiffreAffaires / SUM(ChiffreAffaires) OVER (), 2) AS PartPourcentage\nFROM ca_par_canal\nORDER BY ChiffreAffaires DESC;",
+        "ok": true,
+        "detail": "4 ligne(s)"
+      }
+    ],
+    "provider": "Google Gemini",
+    "model": "gemini-flash-lite-latest",
+    "date": "2026-10-30"
+  },
+  "Quel est le taux de remplissage moyen par modèle d'avion ?": {
+    "answer": "Le taux de remplissage moyen varie selon le modèle d'avion, de 55,0 % pour l'Airbus A321 à 69,0 % pour le Boeing 737-800 (calculé sur les vols réalisés). L'Airbus A330 (60,4 %) et le Boeing 777-300ER (59,2 %) se situent dans la moyenne, suivis de l'Airbus A320 (58,8 %) et de l'Embraer E195 (57,9 %).",
+    "sql": "SELECT \n    a.Modele AS \"Modèle d'avion\",\n    ROUND(AVG(o.TauxRemplissage) * 100, 1) AS \"Taux de remplissage moyen (%)\",\n    COUNT(o.OperationID) AS \"Nombre de vols\"\nFROM v_operations o\nJOIN dim_avion a ON o.AvionID = a.AvionID\nWHERE o.StatutVol IN ('À l''heure', 'Retardé')\nGROUP BY a.Modele\nORDER BY \"Taux de remplissage moyen (%)\" DESC;",
+    "chart": {
+      "title": "Taux de remplissage moyen par modèle d'avion (%)",
+      "type": "horizontal_bar",
+      "x": "Modèle d'avion",
+      "y": "Taux de remplissage moyen (%)"
+    },
+    "steps": [
+      {
+        "objectif": "Calculer le taux de remplissage moyen par modèle d'avion",
+        "sql": "SELECT \n    a.Modele,\n    COUNT(o.OperationID) AS NbVols,\n    AVG(o.TauxRemplissage) AS TauxRemplissageMoyen_Avg,\n    SUM(o.NombrePassagers) * 100.0 / SUM(o.CapaciteDisponible) AS TauxRemplissageMoyen_Weighted\nFROM v_operations o\nJOIN dim_avion a ON o.AvionID = a.AvionID\nWHERE o.StatutVol != 'Annulé' -- vérifions si les vols annulés ont des passagers ou pas\nGROUP BY a.Modele\nORDER BY TauxRemplissageMoyen_Avg DESC;\n",
+        "ok": true,
+        "detail": "6 ligne(s)"
+      },
+      {
+        "objectif": "Vérifier l'impact du statut du vol sur le taux de remplissage",
+        "sql": "SELECT \n    StatutVol,\n    COUNT(*) as count_vols,\n    AVG(TauxRemplissage) as avg_taux,\n    COUNT(TauxRemplissage) as count_taux_non_null\nFROM v_operations\nGROUP BY StatutVol;\n",
+        "ok": true,
+        "detail": "4 ligne(s)"
+      },
+      {
+        "objectif": "Inspecter les vols annulés et déroutés",
+        "sql": "SELECT StatutVol, AVG(NombrePassagers), AVG(CapaciteDisponible)\nFROM v_operations\nGROUP BY StatutVol;\n",
+        "ok": true,
+        "detail": "4 ligne(s)"
+      },
+      {
+        "objectif": "Comparer taux de remplissage avec et sans vols annulés/déroutés",
+        "sql": "SELECT \n    a.Modele,\n    ROUND(AVG(CASE WHEN o.StatutVol IN ('À l''heure', 'Retardé') THEN o.TauxRemplissage END) * 100, 2) AS TauxRemplissageReelPct,\n    ROUND(AVG(o.TauxRemplissage) * 100, 2) AS TauxRemplissageTousVolsPct,\n    COUNT(CASE WHEN o.StatutVol IN ('À l''heure', 'Retardé') THEN 1 END) AS NbVolsRealises,\n    COUNT(*) AS NbVolsTotal\nFROM v_operations o\nJOIN dim_avion a ON o.AvionID = a.AvionID\nGROUP BY a.Modele\nORDER BY TauxRemplissageReelPct DESC;\n",
+        "ok": true,
+        "detail": "6 ligne(s)"
+      },
+      {
+        "objectif": "Requête finale pour le taux de remplissage par modèle d'avion",
+        "sql": "SELECT \n    a.Modele AS \"Modèle d'avion\",\n    ROUND(AVG(o.TauxRemplissage) * 100, 1) AS \"Taux de remplissage moyen (%)\",\n    COUNT(o.OperationID) AS \"Nombre de vols\"\nFROM v_operations o\nJOIN dim_avion a ON o.AvionID = a.AvionID\nWHERE o.StatutVol IN ('À l''heure', 'Retardé')\nGROUP BY a.Modele\nORDER BY \"Taux de remplissage moyen (%)\" DESC;\n",
+        "ok": true,
+        "detail": "6 ligne(s)"
+      }
+    ],
+    "provider": "Google Gemini",
+    "model": "gemini-flash-lite-latest",
+    "date": "2026-10-30"
+  }
+}

@@ -1,0 +1,16 @@
+AvionID,Immatriculation,Modele,Constructeur,CapaciteEconomy,CapacitePremium,CapaciteBusiness,AnneeMiseEnService,CapaciteTotale
+1,A320-01,Airbus A320,Airbus,150,20,10,2015,180
+2,A320-02,Airbus A320,Airbus,150,20,10,2017,180
+3,A320-03,Airbus A320,Airbus,150,20,10,2019,180
+4,A321-01,Airbus A321,Airbus,185,24,12,2016,221
+5,A321-02,Airbus A321,Airbus,185,24,12,2020,221
+6,A321-03,Airbus A321,Airbus,185,24,12,2022,221
+7,A330-01,Airbus A330,Airbus,260,32,20,2013,312
+8,A330-02,Airbus A330,Airbus,260,32,20,2018,312
+9,B738-01,Boeing 737-800,Boeing,160,18,8,2014,186
+10,B738-02,Boeing 737-800,Boeing,160,18,8,2019,186
+11,B738-03,Boeing 737-800,Boeing,160,18,8,2021,186
+12,B77W-01,Boeing 777-300ER,Boeing,300,40,28,2012,368
+13,B77W-02,Boeing 777-300ER,Boeing,300,40,28,2017,368
+14,E195-01,Embraer E195,Embraer,108,12,0,2020,120
+15,E195-02,Embraer E195,Embraer,108,12,0,2023,120
